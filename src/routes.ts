@@ -22,6 +22,7 @@ routes.get(
   "/plantas/estoque/valor-total",
   PlantaController.readValorTotalEstoque
 );
+routes.get("/plantas/esgotadas", PlantaController.readPlantasEsgotadas);
 routes.get("/plantas/:id", PlantaController.readPlantaById);
 routes.patch("/plantas/:id", PlantaController.updatePlanta);
 routes.delete("/plantas/:id", PlantaController.deletePlanta);

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, dirname } from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const baseUrl = (process.env.API_URL || 'http://localhost:3001').replace(/\/$/, '');
@@ -12,10 +12,24 @@ const prefix = `E2E-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 const created = new Set();
 const tests = [], cleanup = [];
 let fatalError = null, baseline, a, b, c, missingId;
+let seedStarted = false;
+const seedPrefix = `${prefix}-SEED`;
 let commit = process.env.GITHUB_SHA || null;
 try { commit ||= execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch {}
 
 async function request(method, path, body) {
+  if (method === 'CLI') {
+    seedStarted = true;
+    const result = spawnSync(process.execPath, [resolve(root, 'node_modules/prisma/build/index.js'), 'db', 'seed'], {
+      cwd: root,
+      env: { ...process.env, DATABASE_HOST: 'localhost', SEED_PREFIX: seedPrefix },
+      encoding: 'utf8',
+      timeout: 30000,
+      windowsHide: true,
+    });
+    if (result.error) throw result.error;
+    return { status: result.status ?? 1, body: { stdout: result.stdout.trim(), stderr: result.stderr.trim() } };
+  }
   const response = await fetch(`${baseUrl}${path}`, {
     method, headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(10000),
@@ -34,7 +48,7 @@ async function test(group, name, method, path, body, expectedStatus, expected, c
     entry.response = result;
     if (method === 'POST' && path === '/plantas' && Number.isInteger(result.body?.id) && result.body?.nome?.startsWith(prefix)) created.add(result.body.id);
     if (Array.isArray(expectedStatus)) assert.ok(expectedStatus.includes(result.status), `Status recebido: ${result.status}`);
-    else assert.equal(result.status, expectedStatus, `Esperado HTTP ${expectedStatus}; recebido HTTP ${result.status}`);
+    else assert.equal(result.status, expectedStatus, `Esperado ${method === 'CLI' ? 'código de saída' : 'HTTP'} ${expectedStatus}; recebido ${result.status}`);
     if (result.status === 400 || result.status === 404) {
       assert.equal(typeof result.body?.message, 'string', 'Erro deve conter message');
       assert.ok(result.body.message.trim().length > 0, 'Mensagem vazia');
@@ -134,12 +148,78 @@ try {
   await test('Concorrência', 'Somente uma compra passa e estoque termina em zero', 'GET', `/plantas/${c.id}`, undefined, 200, 'Status das vendas [200, 400]; estoque final 0.', (data) => {
     assert.deepEqual(simultaneous.map((result) => result?.status).sort((x, y) => x - y), [200, 400]); assert.equal(data.estoque, 0);
   });
+  await test('Bônus · Busca', 'Prepara planta para distinguir busca e ordenação', 'POST', '/plantas', {
+    ...dataB, nome: `${prefix}-Abacate`, preco: 100, estoque: 2, luminosidade: 'SOL_PLENO', petFriendly: false,
+  }, 201, 'Planta barata cadastrada por último, com nome que vem antes das demais.');
+  const bonusPlant = requirePassed();
+  const ownedIds = [a.id, b.id, c.id, bonusPlant.id].sort((x, y) => x - y);
+  await test('Bônus · Busca', 'Busca ignora diferenças entre maiúsculas e minúsculas', 'GET', `/plantas?nome=${encodeURIComponent(prefix.toLowerCase())}`, undefined, 200, 'Encontra as quatro plantas pelo prefixo em letras minúsculas.', (data) => {
+    assert.ok(Array.isArray(data)); assert.deepEqual(data.map((plant) => plant.id).sort((x, y) => x - y), ownedIds);
+  });
+  await test('Bônus · Busca', 'Busca encontra parte do nome com letras misturadas', 'GET', `/plantas?nome=${encodeURIComponent(prefix + '-mArAnTa')}`, undefined, 200, 'Retorna somente a Maranta da suíte.', (data) => assert.deepEqual(data.map((plant) => plant.id), [a.id]));
+  await test('Bônus · Busca', 'Busca sem correspondências retorna lista vazia', 'GET', `/plantas?nome=${encodeURIComponent(prefix + '-inexistente')}`, undefined, 200, 'Retorna [] e não 404.', (data) => assert.deepEqual(data, []));
+  await test('Bônus · Busca', 'Busca por nome combina com os filtros existentes', 'GET', `/plantas?nome=${encodeURIComponent(prefix)}&luminosidade=SOMBRA&petFriendly=true`, undefined, 200, 'Somente plantas do prefixo que sejam de sombra e pet-friendly.', (data) => {
+    assert.deepEqual(data.map((plant) => plant.id).sort((x, y) => x - y), [b.id, c.id].sort((x, y) => x - y));
+    assert.ok(data.every((plant) => plant.luminosidade === 'SOMBRA' && plant.petFriendly));
+  });
+  for (const query of ['?nome=', '?nome=%20%20', '?nome=maranta&nome=cacto', '?nome[valor]=maranta']) {
+    await test('Bônus · Busca', `Rejeita busca inválida ${query}`, 'GET', `/plantas${query}`, undefined, 400, 'Nome deve ser um único texto não vazio.');
+  }
+  await test('Bônus · Ordenação', 'Busca de referência para comparar a ordem', 'GET', `/plantas?nome=${encodeURIComponent(prefix)}`, undefined, 200, 'Quatro plantas pertencentes a esta execução.', (data) => assert.equal(data.length, 4));
+  const bonusPlants = requirePassed();
+  const byPrice = [...bonusPlants].sort((left, right) => left.preco - right.preco || left.id - right.id);
+  const byName = [...bonusPlants].sort((left, right) => left.nome < right.nome ? -1 : left.nome > right.nome ? 1 : left.id - right.id);
+  await test('Bônus · Ordenação', 'Ordena pelo preço crescente com desempate por ID', 'GET', `/plantas?nome=${encodeURIComponent(prefix)}&ordem=preco`, undefined, 200, 'A planta de 100 centavos vem primeiro; preços iguais usam o ID.', (data) => assert.deepEqual(data.map((plant) => plant.id), byPrice.map((plant) => plant.id)));
+  await test('Bônus · Ordenação', 'Ordena pelo nome em ordem crescente', 'GET', `/plantas?nome=${encodeURIComponent(prefix)}&ordem=nome`, undefined, 200, 'A ordem dos nomes corresponde às plantas de referência.', (data) => assert.deepEqual(data.map((plant) => plant.id), byName.map((plant) => plant.id)));
+  await test('Bônus · Ordenação', 'Combina nome, luminosidade, petFriendly e ordenação', 'GET', `/plantas?nome=${encodeURIComponent(prefix)}&luminosidade=SOL_PLENO&petFriendly=false&ordem=preco`, undefined, 200, 'Retorna somente a planta de sol pleno da suíte.', (data) => assert.deepEqual(data.map((plant) => plant.id), [bonusPlant.id]));
+  for (const query of ['?ordem=estoque', '?ordem=', '?ordem=PRECO', '?ordem=preco&ordem=nome', '?ordem[valor]=preco']) {
+    await test('Bônus · Ordenação', `Rejeita ordenação inválida ${query}`, 'GET', `/plantas${query}`, undefined, 400, 'ordem aceita somente preco ou nome.');
+  }
+  await test('Bônus · Esgotadas', 'Lista somente plantas com estoque zero', 'GET', '/plantas/esgotadas', undefined, 200, 'Inclui plantas esgotadas e exclui a planta com dois vasos.', (data) => {
+    assert.ok(Array.isArray(data)); assert.ok(data.every((plant) => plant.estoque === 0));
+    for (const id of [a.id, b.id, c.id]) assert.ok(data.some((plant) => plant.id === id));
+    assert.ok(!data.some((plant) => plant.id === bonusPlant.id));
+  });
+
+  await test('Bônus · Seed', 'Executa o seed com um prefixo exclusivo para testes', 'CLI', 'yarn seed', { SEED_PREFIX: seedPrefix }, 0, 'Comando termina com código de saída 0 e insere exemplos.');
+  requirePassed();
+  const seededResponse = await request('GET', `/plantas?nome=${encodeURIComponent(seedPrefix)}`);
+  if (seededResponse.status !== 200 || !Array.isArray(seededResponse.body)) throw new Error('Não foi possível identificar os exemplos do seed para limpeza');
+  for (const plant of seededResponse.body) if (plant.nome.startsWith(seedPrefix)) created.add(plant.id);
+  await test('Bônus · Seed', 'Seed cria três exemplos com dados válidos', 'GET', `/plantas?nome=${encodeURIComponent(seedPrefix)}&ordem=preco`, undefined, 200, 'Três exemplos com preços inteiros, cuidados e as três luminosidades.', (data) => {
+    assert.equal(data.length, 3);
+    assert.deepEqual([...new Set(data.map((plant) => plant.luminosidade))].sort(), ['MEIA_SOMBRA', 'SOL_PLENO', 'SOMBRA']);
+    for (const plant of data) {
+      assert.ok(plant.nome.startsWith(seedPrefix)); assert.ok(plant.especie.trim());
+      assert.ok(Number.isInteger(plant.preco) && plant.preco > 0);
+      assert.ok(Number.isInteger(plant.estoque) && plant.estoque >= 0);
+      assert.ok(Number.isInteger(plant.regaACadaDias) && plant.regaACadaDias >= 1);
+      assert.equal(typeof plant.petFriendly, 'boolean');
+    }
+  });
+  const seededPlants = requirePassed();
+  await test('Bônus · Seed', 'Altera estoque de um exemplo antes de repetir o seed', 'PATCH', `/plantas/${seededPlants[0].id}`, { estoque: 1 }, 200, 'Estoque passa a 1 para conferir que o seed não sobrescreve alterações.', (data) => assert.equal(data.estoque, 1));
+  const changedSeed = requirePassed();
+  const seedSnapshot = seededPlants.map((plant) => plant.id === changedSeed.id ? changedSeed : plant).sort((x, y) => x.id - y.id);
+  await test('Bônus · Seed', 'Repete o seed sem erro', 'CLI', 'yarn seed', { SEED_PREFIX: seedPrefix }, 0, 'Segunda execução termina com código 0.');
+  requirePassed();
+  await test('Bônus · Seed', 'Repetir o seed não duplica nem sobrescreve os exemplos', 'GET', `/plantas?nome=${encodeURIComponent(seedPrefix)}`, undefined, 200, 'Mesmos IDs, dados e estoque alterado preservados.', (data) => assert.deepEqual([...data].sort((x, y) => x.id - y.id), seedSnapshot));
+
   await test('Exclusão', 'Exclui planta criada pela suíte', 'DELETE', `/plantas/${a.id}`, undefined, 204, 'Resposta sem corpo.', (data) => assert.equal(data, null));
   await test('Exclusão', 'Busca após exclusão retorna 404', 'GET', `/plantas/${a.id}`, undefined, 404, 'Planta não encontrada.');
   await test('Exclusão', 'Excluir novamente retorna 404', 'DELETE', `/plantas/${a.id}`, undefined, 404, 'Planta não encontrada.');
   await test('Exclusão', 'Excluir ID inválido retorna 400', 'DELETE', '/plantas/abc', undefined, 400, 'ID inválido.');
 } catch (error) { fatalError = error.message; console.error(fatalError); }
 finally {
+  // Descobre exemplos próprios mesmo se a execução do seed falhar após gravá-los.
+  if (seedStarted) {
+    try {
+      const result = await request('GET', `/plantas?nome=${encodeURIComponent(seedPrefix)}`);
+      assert.equal(result.status, 200);
+      assert.ok(Array.isArray(result.body));
+      for (const plant of result.body) if (plant.nome.startsWith(seedPrefix)) created.add(plant.id);
+    } catch (error) { cleanup.push({ id: null, ok: false, error: `Falha ao localizar exemplos do seed: ${error.message}` }); }
+  }
   for (const id of created) {
     try { const result = await request('DELETE', `/plantas/${id}`); cleanup.push({ id, status: result.status, ok: [204, 404].includes(result.status) }); }
     catch (error) { cleanup.push({ id, ok: false, error: error.message }); }
@@ -151,7 +231,7 @@ finally {
     source: process.env.GITHUB_ACTIONS ? 'github-actions' : 'local', commit,
     runUrl: process.env.GITHUB_RUN_ID ? `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}` : null,
     baseUrl, runId: prefix, summary, fatalError, cleanup,
-    scope: 'Testes HTTP contra a API real. Plantas próprias da suíte; limpeza ao final. Execute sem outras alterações simultâneas no banco.', tests,
+    scope: 'Testes HTTP contra a API real e execução do seed via Prisma. Inclui os quatro bônus. Plantas próprias da suíte; limpeza ao final. Execute sem outras alterações simultâneas no banco.', tests,
   };
   await mkdir(dirname(reportPath), { recursive: true });
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');

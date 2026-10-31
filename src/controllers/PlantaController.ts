@@ -138,7 +138,7 @@ export const createPlanta = async (req: Request, res: Response) => {
 
 export const readAllPlantas = async (req: Request, res: Response) => {
   try {
-    const { luminosidade, petFriendly } = req.query;
+    const { luminosidade, petFriendly, nome, ordem } = req.query;
 
     if (
       luminosidade !== undefined &&
@@ -162,11 +162,33 @@ export const readAllPlantas = async (req: Request, res: Response) => {
       });
     }
 
-    const plantas = await PlantaRepository.findAllPlantas({
-      luminosidade: luminosidade as Luminosidade | undefined,
-      petFriendly:
-        petFriendly === undefined ? undefined : petFriendly === "true",
-    });
+    if (
+      nome !== undefined &&
+      (typeof nome !== "string" || nome.trim() === "")
+    ) {
+      return res.status(400).json({
+        message: "nome deve ser um texto não vazio.",
+      });
+    }
+
+    if (ordem !== undefined && ordem !== "preco" && ordem !== "nome") {
+      return res.status(400).json({
+        message: "ordem deve ser preco ou nome.",
+      });
+    }
+
+    const plantas = await PlantaRepository.findAllPlantas(
+      {
+        luminosidade: luminosidade as Luminosidade | undefined,
+        petFriendly:
+          petFriendly === undefined ? undefined : petFriendly === "true",
+        nome:
+          typeof nome === "string"
+            ? { contains: nome.trim(), mode: "insensitive" }
+            : undefined,
+      },
+      ordem as "preco" | "nome" | undefined
+    );
 
     return res.status(200).json(plantas);
   } catch (error) {
@@ -365,6 +387,19 @@ export const readValorTotalEstoque = async (
     console.error(error);
     return res.status(500).json({
       message: "Erro ao calcular o valor total do estoque.",
+    });
+  }
+};
+
+export const readPlantasEsgotadas = async (req: Request, res: Response) => {
+  try {
+    const plantas = await PlantaRepository.findPlantasEsgotadas();
+
+    return res.status(200).json(plantas);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erro ao buscar plantas esgotadas.",
     });
   }
 };

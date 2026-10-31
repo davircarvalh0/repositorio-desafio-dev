@@ -54,3 +54,5 @@ button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-col
 @media(prefers-contrast:more){[data-theme=dark] .badge.passed{color:#82ffb1;border-color:#82ffb1}}
 
 .github-shortcut{color:var(--green);display:inline-flex;align-items:center;min-height:2.75rem;text-decoration:underline;text-underline-offset:.25em;text-decoration-color:transparent;transition:text-decoration-color .18s ease}.github-shortcut:hover{text-decoration-color:currentColor}
+
+.method.CLI{color:var(--green);letter-spacing:.04em}

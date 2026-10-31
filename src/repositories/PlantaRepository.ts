@@ -8,10 +8,26 @@ export const createPlanta = async (data: Prisma.PlantaCreateInput) => {
 };
 
 export const findAllPlantas = async (
-  filtros: Prisma.PlantaWhereInput = {}
+  filtros: Prisma.PlantaWhereInput = {},
+  ordem?: "preco" | "nome"
 ) => {
+  const orderBy: Prisma.PlantaOrderByWithRelationInput[] =
+    ordem === "preco"
+      ? [{ preco: "asc" }, { id: "asc" }]
+      : ordem === "nome"
+        ? [{ nome: "asc" }, { id: "asc" }]
+        : [{ id: "asc" }];
+
   return await prisma.planta.findMany({
     where: filtros,
+    orderBy,
+  });
+};
+
+export const findPlantasEsgotadas = async () => {
+  return await prisma.planta.findMany({
+    where: { estoque: 0 },
+    orderBy: { id: "asc" },
   });
 };
 
