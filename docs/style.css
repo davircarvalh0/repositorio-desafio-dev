@@ -56,3 +56,11 @@ button,input,select{font:inherit}button,a,input,select{-webkit-tap-highlight-col
 .github-shortcut{color:var(--green);display:inline-flex;align-items:center;min-height:2.75rem;text-decoration:underline;text-underline-offset:.25em;text-decoration-color:transparent;transition:text-decoration-color .18s ease}.github-shortcut:hover{text-decoration-color:currentColor}
 
 .method.CLI{color:var(--green);letter-spacing:.04em}
+
+.portfolio-shortcut{font-weight:650;color:var(--green)}
+@media(max-width:600px){.nav-actions>a.nav-evidence,.nav-actions>a.nav-code{display:none}.nav-actions>a.portfolio-shortcut{padding:0 .5rem;font-size:.7rem}.nav-actions{gap:.25rem}}
+
+/* Acesso ao portal principal das seis dinâmicas. */
+.nav-actions>a.portfolio-shortcut{color:var(--green);background:var(--green-bg);border:1px solid var(--line);border-radius:100px;padding:0 1rem;font-weight:650}
+.shortcut-label-compact{display:none}
+@media(max-width:600px){.shortcut-label-full{display:none}.shortcut-label-compact{display:inline}.nav-actions>a.portfolio-shortcut{padding:0 .65rem;font-size:.68rem;white-space:nowrap}}
