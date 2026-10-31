@@ -1,0 +1,4 @@
+node_modules
+dist
+# Mantém as variáveis de ambiente fora do git (use o .env.example como modelo)
+.env
