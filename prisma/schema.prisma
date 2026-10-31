@@ -22,3 +22,22 @@ enum Conta {
   CPF
   CNPJ
 }
+
+enum Luminosidade {
+  SOMBRA
+  MEIA_SOMBRA
+  SOL_PLENO
+}
+
+model Planta {
+  id            Int          @id @default(autoincrement())
+  nome          String
+  especie       String
+  preco         Int
+  estoque       Int
+  luminosidade  Luminosidade
+  petFriendly   Boolean
+  regaACadaDias  Int
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
