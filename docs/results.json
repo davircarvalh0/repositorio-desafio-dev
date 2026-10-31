@@ -1,0 +1,1802 @@
+{
+  "schemaVersion": 1,
+  "project": "Folhagem & Cia",
+  "author": "Davi Rosendo",
+  "startedAt": "2026-10-31T11:56:06.267Z",
+  "finishedAt": "2026-10-31T11:56:07.076Z",
+  "source": "local",
+  "commit": "68af5149d9ac25c298b1f07919b59e1daaef95e3",
+  "runUrl": null,
+  "baseUrl": "http://localhost:3001",
+  "runId": "E2E-1793447766268-q718bd",
+  "summary": {
+    "total": 70,
+    "passed": 70,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fatalError": null,
+  "cleanup": [
+    {
+      "id": 5,
+      "status": 404,
+      "ok": true
+    },
+    {
+      "id": 6,
+      "status": 204,
+      "ok": true
+    },
+    {
+      "id": 7,
+      "status": 204,
+      "ok": true
+    }
+  ],
+  "scope": "Testes HTTP contra a API real. Plantas próprias da suíte; limpeza ao final. Execute sem outras alterações simultâneas no banco.",
+  "tests": [
+    {
+      "id": 1,
+      "group": "Preparação",
+      "name": "API disponível",
+      "method": "GET",
+      "path": "/",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "API responde HTTP 200.",
+      "startedAt": "2026-10-31T11:56:06.319Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "message": "API do treinamento de CRUD do CITi 🚀"
+        }
+      },
+      "status": "passed",
+      "durationMs": 113.65
+    },
+    {
+      "id": 2,
+      "group": "Estoque",
+      "name": "Listagem inicial para conferir a soma",
+      "method": "GET",
+      "path": "/plantas",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Uma lista de plantas.",
+      "startedAt": "2026-10-31T11:56:06.436Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "nome": "Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 3990,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T03:02:41.446Z",
+            "updatedAt": "2026-10-31T03:02:41.446Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 59.05
+    },
+    {
+      "id": 3,
+      "group": "Estoque",
+      "name": "Valor inicial corresponde à soma das plantas",
+      "method": "GET",
+      "path": "/plantas/estoque/valor-total",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Soma de preco × estoque e quantidade de vasos.",
+      "startedAt": "2026-10-31T11:56:06.495Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "valorTotalEmCentavos": 0,
+          "totalDeVasos": 0
+        }
+      },
+      "status": "passed",
+      "durationMs": 7.16
+    },
+    {
+      "id": 4,
+      "group": "Cadastro",
+      "name": "Aceita estoque zero e petFriendly false",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 201,
+      "expected": "Planta criada com estoque 0 e petFriendly false.",
+      "startedAt": "2026-10-31T11:56:06.502Z",
+      "response": {
+        "status": 201,
+        "body": {
+          "id": 5,
+          "nome": "E2E-1793447766268-q718bd-Maranta",
+          "especie": "Maranta leuconeura",
+          "preco": 3990,
+          "estoque": 0,
+          "luminosidade": "MEIA_SOMBRA",
+          "petFriendly": false,
+          "regaACadaDias": 3,
+          "createdAt": "2026-10-31T11:56:06.516Z",
+          "updatedAt": "2026-10-31T11:56:06.516Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 25.05
+    },
+    {
+      "id": 5,
+      "group": "Cadastro",
+      "name": "Cadastro com estoque disponível",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Samambaia",
+        "especie": "Nephrolepis exaltata",
+        "preco": 8990,
+        "estoque": 5,
+        "luminosidade": "SOMBRA",
+        "petFriendly": true,
+        "regaACadaDias": 2
+      },
+      "expectedStatus": 201,
+      "expected": "Planta criada com estoque 5.",
+      "startedAt": "2026-10-31T11:56:06.528Z",
+      "response": {
+        "status": 201,
+        "body": {
+          "id": 6,
+          "nome": "E2E-1793447766268-q718bd-Samambaia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 5,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.533Z",
+          "updatedAt": "2026-10-31T11:56:06.533Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 10.03
+    },
+    {
+      "id": 6,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de nome",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre nome.",
+      "startedAt": "2026-10-31T11:56:06.538Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo nome é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.6
+    },
+    {
+      "id": 7,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de especie",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre especie.",
+      "startedAt": "2026-10-31T11:56:06.543Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo especie é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.45
+    },
+    {
+      "id": 8,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de preco",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre preco.",
+      "startedAt": "2026-10-31T11:56:06.548Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo preco é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.85
+    },
+    {
+      "id": 9,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de estoque",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre estoque.",
+      "startedAt": "2026-10-31T11:56:06.554Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo estoque é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.67
+    },
+    {
+      "id": 10,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de luminosidade",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre luminosidade.",
+      "startedAt": "2026-10-31T11:56:06.561Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo luminosidade é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 8.2
+    },
+    {
+      "id": 11,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de petFriendly",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre petFriendly.",
+      "startedAt": "2026-10-31T11:56:06.570Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo petFriendly é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.22
+    },
+    {
+      "id": 12,
+      "group": "Cadastro",
+      "name": "Rejeita ausência de regaACadaDias",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false
+      },
+      "expectedStatus": 400,
+      "expected": "Mensagem clara sobre regaACadaDias.",
+      "startedAt": "2026-10-31T11:56:06.574Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O campo regaACadaDias é obrigatório."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.56
+    },
+    {
+      "id": 13,
+      "group": "Cadastro",
+      "name": "Rejeita preço zero",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 0,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.580Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.15
+    },
+    {
+      "id": 14,
+      "group": "Cadastro",
+      "name": "Rejeita preço negativo",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": -1,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.584Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.52
+    },
+    {
+      "id": 15,
+      "group": "Cadastro",
+      "name": "Rejeita preço como texto",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": "8990",
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.590Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.26
+    },
+    {
+      "id": 16,
+      "group": "Cadastro",
+      "name": "Rejeita preço fracionado",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 89.9,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.595Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.61
+    },
+    {
+      "id": 17,
+      "group": "Cadastro",
+      "name": "Rejeita estoque negativo",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": -1,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.599Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "estoque deve ser um inteiro maior ou igual a zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.52
+    },
+    {
+      "id": 18,
+      "group": "Cadastro",
+      "name": "Rejeita estoque fracionado",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 1.5,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.605Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "estoque deve ser um inteiro maior ou igual a zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.41
+    },
+    {
+      "id": 19,
+      "group": "Cadastro",
+      "name": "Rejeita luminosidade inválida",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "LUA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.608Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "luminosidade deve ser SOMBRA, MEIA_SOMBRA ou SOL_PLENO."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.62
+    },
+    {
+      "id": 20,
+      "group": "Cadastro",
+      "name": "Rejeita petFriendly como texto",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": "false",
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.615Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "petFriendly deve ser um booleano."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.84
+    },
+    {
+      "id": 21,
+      "group": "Cadastro",
+      "name": "Rejeita rega zero",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 0
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.622Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "regaACadaDias deve ser um inteiro maior ou igual a 1."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.82
+    },
+    {
+      "id": 22,
+      "group": "Cadastro",
+      "name": "Rejeita rega fracionada",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 1.5
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.626Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "regaACadaDias deve ser um inteiro maior ou igual a 1."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.6
+    },
+    {
+      "id": 23,
+      "group": "Cadastro",
+      "name": "Rejeita nome vazio",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "   ",
+        "especie": "Maranta leuconeura",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.633Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "nome deve ser um texto não vazio."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.67
+    },
+    {
+      "id": 24,
+      "group": "Cadastro",
+      "name": "Rejeita espécie vazia",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "",
+        "preco": 3990,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.637Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "especie deve ser um texto não vazio."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.02
+    },
+    {
+      "id": 25,
+      "group": "Cadastro",
+      "name": "Rejeita preço nulo",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Maranta",
+        "especie": "Maranta leuconeura",
+        "preco": null,
+        "estoque": 0,
+        "luminosidade": "MEIA_SOMBRA",
+        "petFriendly": false,
+        "regaACadaDias": 3
+      },
+      "expectedStatus": 400,
+      "expected": "Dados inválidos retornam 400 com mensagem.",
+      "startedAt": "2026-10-31T11:56:06.642Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.02
+    },
+    {
+      "id": 26,
+      "group": "Consulta",
+      "name": "Lista as duas plantas criadas",
+      "method": "GET",
+      "path": "/plantas",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Lista inclui os dois IDs; cadastros recusados não criam registros.",
+      "startedAt": "2026-10-31T11:56:06.646Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "nome": "Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 3990,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T03:02:41.446Z",
+            "updatedAt": "2026-10-31T03:02:41.446Z"
+          },
+          {
+            "id": 5,
+            "nome": "E2E-1793447766268-q718bd-Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 3990,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T11:56:06.516Z",
+            "updatedAt": "2026-10-31T11:56:06.516Z"
+          },
+          {
+            "id": 6,
+            "nome": "E2E-1793447766268-q718bd-Samambaia",
+            "especie": "Nephrolepis exaltata",
+            "preco": 8990,
+            "estoque": 5,
+            "luminosidade": "SOMBRA",
+            "petFriendly": true,
+            "regaACadaDias": 2,
+            "createdAt": "2026-10-31T11:56:06.533Z",
+            "updatedAt": "2026-10-31T11:56:06.533Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 8.03
+    },
+    {
+      "id": 27,
+      "group": "Consulta",
+      "name": "Busca por ID existente",
+      "method": "GET",
+      "path": "/plantas/5",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Retorna a planta solicitada.",
+      "startedAt": "2026-10-31T11:56:06.655Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 5,
+          "nome": "E2E-1793447766268-q718bd-Maranta",
+          "especie": "Maranta leuconeura",
+          "preco": 3990,
+          "estoque": 0,
+          "luminosidade": "MEIA_SOMBRA",
+          "petFriendly": false,
+          "regaACadaDias": 3,
+          "createdAt": "2026-10-31T11:56:06.516Z",
+          "updatedAt": "2026-10-31T11:56:06.516Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 8.85
+    },
+    {
+      "id": 28,
+      "group": "Consulta",
+      "name": "Busca por ID inexistente",
+      "method": "GET",
+      "path": "/plantas/2147483647",
+      "body": null,
+      "expectedStatus": 404,
+      "expected": "Planta não encontrada.",
+      "startedAt": "2026-10-31T11:56:06.664Z",
+      "response": {
+        "status": 404,
+        "body": {
+          "message": "Planta não encontrada."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.37
+    },
+    {
+      "id": 29,
+      "group": "Consulta",
+      "name": "Rejeita ID textual",
+      "method": "GET",
+      "path": "/plantas/abc",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "ID deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.669Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O id deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.69
+    },
+    {
+      "id": 30,
+      "group": "Consulta",
+      "name": "Rejeita ID zero",
+      "method": "GET",
+      "path": "/plantas/0",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "ID deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.673Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O id deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.54
+    },
+    {
+      "id": 31,
+      "group": "Edição",
+      "name": "PATCH altera somente o preço",
+      "method": "PATCH",
+      "path": "/plantas/5",
+      "body": {
+        "preco": 4590
+      },
+      "expectedStatus": 200,
+      "expected": "Preço alterado; demais dados preservados.",
+      "startedAt": "2026-10-31T11:56:06.677Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 5,
+          "nome": "E2E-1793447766268-q718bd-Maranta",
+          "especie": "Maranta leuconeura",
+          "preco": 4590,
+          "estoque": 0,
+          "luminosidade": "MEIA_SOMBRA",
+          "petFriendly": false,
+          "regaACadaDias": 3,
+          "createdAt": "2026-10-31T11:56:06.516Z",
+          "updatedAt": "2026-10-31T11:56:06.686Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 12.72
+    },
+    {
+      "id": 32,
+      "group": "Edição",
+      "name": "PATCH rejeita estoque negativo",
+      "method": "PATCH",
+      "path": "/plantas/5",
+      "body": {
+        "estoque": -1
+      },
+      "expectedStatus": 400,
+      "expected": "Edição recusada com mensagem clara.",
+      "startedAt": "2026-10-31T11:56:06.690Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "estoque deve ser um inteiro maior ou igual a zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.05
+    },
+    {
+      "id": 33,
+      "group": "Edição",
+      "name": "PATCH rejeita preço zero",
+      "method": "PATCH",
+      "path": "/plantas/5",
+      "body": {
+        "preco": 0
+      },
+      "expectedStatus": 400,
+      "expected": "Edição recusada com mensagem clara.",
+      "startedAt": "2026-10-31T11:56:06.694Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "preco deve ser um inteiro maior que zero, em centavos."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.32
+    },
+    {
+      "id": 34,
+      "group": "Edição",
+      "name": "PATCH rejeita booleano em texto",
+      "method": "PATCH",
+      "path": "/plantas/5",
+      "body": {
+        "petFriendly": "true"
+      },
+      "expectedStatus": 400,
+      "expected": "Edição recusada com mensagem clara.",
+      "startedAt": "2026-10-31T11:56:06.698Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "petFriendly deve ser um booleano."
+        }
+      },
+      "status": "passed",
+      "durationMs": 7.51
+    },
+    {
+      "id": 35,
+      "group": "Edição",
+      "name": "PATCH rejeita luminosidade inválida",
+      "method": "PATCH",
+      "path": "/plantas/5",
+      "body": {
+        "luminosidade": "LUA"
+      },
+      "expectedStatus": 400,
+      "expected": "Edição recusada com mensagem clara.",
+      "startedAt": "2026-10-31T11:56:06.711Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "luminosidade deve ser SOMBRA, MEIA_SOMBRA ou SOL_PLENO."
+        }
+      },
+      "status": "passed",
+      "durationMs": 10.28
+    },
+    {
+      "id": 36,
+      "group": "Edição",
+      "name": "Edições recusadas preservam os dados",
+      "method": "GET",
+      "path": "/plantas/5",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Preço 4590; demais campos preservados.",
+      "startedAt": "2026-10-31T11:56:06.722Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 5,
+          "nome": "E2E-1793447766268-q718bd-Maranta",
+          "especie": "Maranta leuconeura",
+          "preco": 4590,
+          "estoque": 0,
+          "luminosidade": "MEIA_SOMBRA",
+          "petFriendly": false,
+          "regaACadaDias": 3,
+          "createdAt": "2026-10-31T11:56:06.516Z",
+          "updatedAt": "2026-10-31T11:56:06.686Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 13.29
+    },
+    {
+      "id": 37,
+      "group": "Edição",
+      "name": "PATCH em ID inexistente",
+      "method": "PATCH",
+      "path": "/plantas/2147483647",
+      "body": {
+        "preco": 5000
+      },
+      "expectedStatus": 404,
+      "expected": "Planta não encontrada.",
+      "startedAt": "2026-10-31T11:56:06.737Z",
+      "response": {
+        "status": 404,
+        "body": {
+          "message": "Planta não encontrada."
+        }
+      },
+      "status": "passed",
+      "durationMs": 9.77
+    },
+    {
+      "id": 38,
+      "group": "Edição",
+      "name": "PATCH rejeita ID textual",
+      "method": "PATCH",
+      "path": "/plantas/abc",
+      "body": {
+        "preco": 5000
+      },
+      "expectedStatus": 400,
+      "expected": "ID inválido.",
+      "startedAt": "2026-10-31T11:56:06.747Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O id deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.34
+    },
+    {
+      "id": 39,
+      "group": "Filtros",
+      "name": "Luminosidade",
+      "method": "GET",
+      "path": "/plantas?luminosidade=SOMBRA",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Todos os resultados atendem ao filtro e incluem a planta esperada.",
+      "startedAt": "2026-10-31T11:56:06.753Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 6,
+            "nome": "E2E-1793447766268-q718bd-Samambaia",
+            "especie": "Nephrolepis exaltata",
+            "preco": 8990,
+            "estoque": 5,
+            "luminosidade": "SOMBRA",
+            "petFriendly": true,
+            "regaACadaDias": 2,
+            "createdAt": "2026-10-31T11:56:06.533Z",
+            "updatedAt": "2026-10-31T11:56:06.533Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 46.79
+    },
+    {
+      "id": 40,
+      "group": "Filtros",
+      "name": "petFriendly true",
+      "method": "GET",
+      "path": "/plantas?petFriendly=true",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Todos os resultados atendem ao filtro e incluem a planta esperada.",
+      "startedAt": "2026-10-31T11:56:06.800Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 6,
+            "nome": "E2E-1793447766268-q718bd-Samambaia",
+            "especie": "Nephrolepis exaltata",
+            "preco": 8990,
+            "estoque": 5,
+            "luminosidade": "SOMBRA",
+            "petFriendly": true,
+            "regaACadaDias": 2,
+            "createdAt": "2026-10-31T11:56:06.533Z",
+            "updatedAt": "2026-10-31T11:56:06.533Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 6.48
+    },
+    {
+      "id": 41,
+      "group": "Filtros",
+      "name": "petFriendly false",
+      "method": "GET",
+      "path": "/plantas?petFriendly=false",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Todos os resultados atendem ao filtro e incluem a planta esperada.",
+      "startedAt": "2026-10-31T11:56:06.807Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "nome": "Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 3990,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T03:02:41.446Z",
+            "updatedAt": "2026-10-31T03:02:41.446Z"
+          },
+          {
+            "id": 5,
+            "nome": "E2E-1793447766268-q718bd-Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 4590,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T11:56:06.516Z",
+            "updatedAt": "2026-10-31T11:56:06.686Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 6.18
+    },
+    {
+      "id": 42,
+      "group": "Filtros",
+      "name": "Dois filtros combinados",
+      "method": "GET",
+      "path": "/plantas?luminosidade=MEIA_SOMBRA&petFriendly=false",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Todos os resultados atendem ao filtro e incluem a planta esperada.",
+      "startedAt": "2026-10-31T11:56:06.813Z",
+      "response": {
+        "status": 200,
+        "body": [
+          {
+            "id": 1,
+            "nome": "Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 3990,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T03:02:41.446Z",
+            "updatedAt": "2026-10-31T03:02:41.446Z"
+          },
+          {
+            "id": 5,
+            "nome": "E2E-1793447766268-q718bd-Maranta",
+            "especie": "Maranta leuconeura",
+            "preco": 4590,
+            "estoque": 0,
+            "luminosidade": "MEIA_SOMBRA",
+            "petFriendly": false,
+            "regaACadaDias": 3,
+            "createdAt": "2026-10-31T11:56:06.516Z",
+            "updatedAt": "2026-10-31T11:56:06.686Z"
+          }
+        ]
+      },
+      "status": "passed",
+      "durationMs": 8.67
+    },
+    {
+      "id": 43,
+      "group": "Filtros",
+      "name": "Rejeita filtro ?luminosidade=LUA",
+      "method": "GET",
+      "path": "/plantas?luminosidade=LUA",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "Filtro inválido retorna 400.",
+      "startedAt": "2026-10-31T11:56:06.824Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "luminosidade deve ser SOMBRA, MEIA_SOMBRA ou SOL_PLENO."
+        }
+      },
+      "status": "passed",
+      "durationMs": 8.02
+    },
+    {
+      "id": 44,
+      "group": "Filtros",
+      "name": "Rejeita filtro ?petFriendly=sim",
+      "method": "GET",
+      "path": "/plantas?petFriendly=sim",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "Filtro inválido retorna 400.",
+      "startedAt": "2026-10-31T11:56:06.833Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "petFriendly deve ser true ou false."
+        }
+      },
+      "status": "passed",
+      "durationMs": 7
+    },
+    {
+      "id": 45,
+      "group": "Filtros",
+      "name": "Rejeita filtro ?petFriendly=",
+      "method": "GET",
+      "path": "/plantas?petFriendly=",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "Filtro inválido retorna 400.",
+      "startedAt": "2026-10-31T11:56:06.841Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "petFriendly deve ser true ou false."
+        }
+      },
+      "status": "passed",
+      "durationMs": 4.57
+    },
+    {
+      "id": 46,
+      "group": "Filtros",
+      "name": "Rejeita filtro ?petFriendly=true&petFriendly=false",
+      "method": "GET",
+      "path": "/plantas?petFriendly=true&petFriendly=false",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "Filtro inválido retorna 400.",
+      "startedAt": "2026-10-31T11:56:06.846Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "petFriendly deve ser true ou false."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.54
+    },
+    {
+      "id": 47,
+      "group": "Filtros",
+      "name": "Rejeita filtro ?luminosidade=SOMBRA&luminosidade=SOL_PLENO",
+      "method": "GET",
+      "path": "/plantas?luminosidade=SOMBRA&luminosidade=SOL_PLENO",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "Filtro inválido retorna 400.",
+      "startedAt": "2026-10-31T11:56:06.849Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "luminosidade deve ser SOMBRA, MEIA_SOMBRA ou SOL_PLENO."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.28
+    },
+    {
+      "id": 48,
+      "group": "Filtros",
+      "name": "Filtro válido sem correspondências retorna lista vazia",
+      "method": "GET",
+      "path": "/plantas?luminosidade=SOMBRA&petFriendly=false",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Lista vazia, nunca 404.",
+      "startedAt": "2026-10-31T11:56:06.861Z",
+      "response": {
+        "status": 200,
+        "body": []
+      },
+      "status": "passed",
+      "durationMs": 4.56
+    },
+    {
+      "id": 49,
+      "group": "Venda",
+      "name": "Venda válida diminui estoque de 5 para 3",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 2
+      },
+      "expectedStatus": 200,
+      "expected": "Estoque final igual a 3.",
+      "startedAt": "2026-10-31T11:56:06.866Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 6,
+          "nome": "E2E-1793447766268-q718bd-Samambaia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 3,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.533Z",
+          "updatedAt": "2026-10-31T11:56:06.877Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 18.56
+    },
+    {
+      "id": 50,
+      "group": "Venda",
+      "name": "Recusa venda além do estoque",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 4
+      },
+      "expectedStatus": 400,
+      "expected": "Estoque insuficiente.",
+      "startedAt": "2026-10-31T11:56:06.885Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "Estoque insuficiente. Temos somente 3 vasos disponíveis."
+        }
+      },
+      "status": "passed",
+      "durationMs": 7.86
+    },
+    {
+      "id": 51,
+      "group": "Venda",
+      "name": "Rejeita quantidade zero",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 0
+      },
+      "expectedStatus": 400,
+      "expected": "Quantidade deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.893Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "quantidade deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.97
+    },
+    {
+      "id": 52,
+      "group": "Venda",
+      "name": "Rejeita quantidade negativa",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": -1
+      },
+      "expectedStatus": 400,
+      "expected": "Quantidade deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.897Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "quantidade deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 2.86
+    },
+    {
+      "id": 53,
+      "group": "Venda",
+      "name": "Rejeita quantidade fracionada",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 1.5
+      },
+      "expectedStatus": 400,
+      "expected": "Quantidade deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.900Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "quantidade deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.65
+    },
+    {
+      "id": 54,
+      "group": "Venda",
+      "name": "Rejeita quantidade texto",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": "2"
+      },
+      "expectedStatus": 400,
+      "expected": "Quantidade deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.904Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "quantidade deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 3.51
+    },
+    {
+      "id": 55,
+      "group": "Venda",
+      "name": "Rejeita quantidade ausente",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {},
+      "expectedStatus": 400,
+      "expected": "Quantidade deve ser inteiro positivo.",
+      "startedAt": "2026-10-31T11:56:06.908Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "quantidade deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.28
+    },
+    {
+      "id": 56,
+      "group": "Venda",
+      "name": "Vendas recusadas não alteram estoque",
+      "method": "GET",
+      "path": "/plantas/6",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Estoque continua em 3.",
+      "startedAt": "2026-10-31T11:56:06.914Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 6,
+          "nome": "E2E-1793447766268-q718bd-Samambaia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 3,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.533Z",
+          "updatedAt": "2026-10-31T11:56:06.877Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.17
+    },
+    {
+      "id": 57,
+      "group": "Venda",
+      "name": "Venda de planta inexistente",
+      "method": "POST",
+      "path": "/plantas/2147483647/venda",
+      "body": {
+        "quantidade": 1
+      },
+      "expectedStatus": 404,
+      "expected": "Planta não encontrada.",
+      "startedAt": "2026-10-31T11:56:06.920Z",
+      "response": {
+        "status": 404,
+        "body": {
+          "message": "Planta não encontrada."
+        }
+      },
+      "status": "passed",
+      "durationMs": 8.49
+    },
+    {
+      "id": 58,
+      "group": "Venda",
+      "name": "Venda com ID inválido",
+      "method": "POST",
+      "path": "/plantas/abc/venda",
+      "body": {
+        "quantidade": 1
+      },
+      "expectedStatus": 400,
+      "expected": "ID inválido.",
+      "startedAt": "2026-10-31T11:56:06.929Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O id deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.06
+    },
+    {
+      "id": 59,
+      "group": "Estoque",
+      "name": "Totais após cadastro, edição e venda",
+      "method": "GET",
+      "path": "/plantas/estoque/valor-total",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Total inicial + 26970 centavos e + 3 vasos.",
+      "startedAt": "2026-10-31T11:56:06.934Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "valorTotalEmCentavos": 26970,
+          "totalDeVasos": 3
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.06
+    },
+    {
+      "id": 60,
+      "group": "Venda",
+      "name": "Venda de todo o estoque restante",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 3
+      },
+      "expectedStatus": 200,
+      "expected": "Estoque final igual a zero.",
+      "startedAt": "2026-10-31T11:56:06.940Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 6,
+          "nome": "E2E-1793447766268-q718bd-Samambaia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 0,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.533Z",
+          "updatedAt": "2026-10-31T11:56:06.949Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 15.14
+    },
+    {
+      "id": 61,
+      "group": "Venda",
+      "name": "Recusa venda de planta esgotada",
+      "method": "POST",
+      "path": "/plantas/6/venda",
+      "body": {
+        "quantidade": 1
+      },
+      "expectedStatus": 400,
+      "expected": "Estoque insuficiente.",
+      "startedAt": "2026-10-31T11:56:06.956Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "Estoque insuficiente. Temos somente 0 vasos disponíveis."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.54
+    },
+    {
+      "id": 62,
+      "group": "Concorrência",
+      "name": "Prepara planta com um único vaso",
+      "method": "POST",
+      "path": "/plantas",
+      "body": {
+        "nome": "E2E-1793447766268-q718bd-Concorrencia",
+        "especie": "Nephrolepis exaltata",
+        "preco": 8990,
+        "estoque": 1,
+        "luminosidade": "SOMBRA",
+        "petFriendly": true,
+        "regaACadaDias": 2
+      },
+      "expectedStatus": 201,
+      "expected": "Planta criada com estoque 1.",
+      "startedAt": "2026-10-31T11:56:06.963Z",
+      "response": {
+        "status": 201,
+        "body": {
+          "id": 7,
+          "nome": "E2E-1793447766268-q718bd-Concorrencia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 1,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.968Z",
+          "updatedAt": "2026-10-31T11:56:06.968Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 8.74
+    },
+    {
+      "id": 63,
+      "group": "Concorrência",
+      "name": "Compra simultânea A",
+      "method": "POST",
+      "path": "/plantas/7/venda",
+      "body": {
+        "quantidade": 1
+      },
+      "expectedStatus": [
+        200,
+        400
+      ],
+      "expected": "Uma compra passa; a outra é recusada.",
+      "startedAt": "2026-10-31T11:56:06.973Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 7,
+          "nome": "E2E-1793447766268-q718bd-Concorrencia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 0,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.968Z",
+          "updatedAt": "2026-10-31T11:56:06.986Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 21.01
+    },
+    {
+      "id": 64,
+      "group": "Concorrência",
+      "name": "Compra simultânea B",
+      "method": "POST",
+      "path": "/plantas/7/venda",
+      "body": {
+        "quantidade": 1
+      },
+      "expectedStatus": [
+        200,
+        400
+      ],
+      "expected": "Uma compra passa; a outra é recusada.",
+      "startedAt": "2026-10-31T11:56:06.975Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "Estoque insuficiente. Temos somente 0 vasos disponíveis."
+        }
+      },
+      "status": "passed",
+      "durationMs": 27.36
+    },
+    {
+      "id": 65,
+      "group": "Concorrência",
+      "name": "Somente uma compra passa e estoque termina em zero",
+      "method": "GET",
+      "path": "/plantas/7",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Status das vendas [200, 400]; estoque final 0.",
+      "startedAt": "2026-10-31T11:56:07.003Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "id": 7,
+          "nome": "E2E-1793447766268-q718bd-Concorrencia",
+          "especie": "Nephrolepis exaltata",
+          "preco": 8990,
+          "estoque": 0,
+          "luminosidade": "SOMBRA",
+          "petFriendly": true,
+          "regaACadaDias": 2,
+          "createdAt": "2026-10-31T11:56:06.968Z",
+          "updatedAt": "2026-10-31T11:56:06.986Z"
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.91
+    },
+    {
+      "id": 66,
+      "group": "Exclusão",
+      "name": "Exclui planta criada pela suíte",
+      "method": "DELETE",
+      "path": "/plantas/5",
+      "body": null,
+      "expectedStatus": 204,
+      "expected": "Resposta sem corpo.",
+      "startedAt": "2026-10-31T11:56:07.009Z",
+      "response": {
+        "status": 204,
+        "body": null
+      },
+      "status": "passed",
+      "durationMs": 10
+    },
+    {
+      "id": 67,
+      "group": "Exclusão",
+      "name": "Busca após exclusão retorna 404",
+      "method": "GET",
+      "path": "/plantas/5",
+      "body": null,
+      "expectedStatus": 404,
+      "expected": "Planta não encontrada.",
+      "startedAt": "2026-10-31T11:56:07.019Z",
+      "response": {
+        "status": 404,
+        "body": {
+          "message": "Planta não encontrada."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.54
+    },
+    {
+      "id": 68,
+      "group": "Exclusão",
+      "name": "Excluir novamente retorna 404",
+      "method": "DELETE",
+      "path": "/plantas/5",
+      "body": null,
+      "expectedStatus": 404,
+      "expected": "Planta não encontrada.",
+      "startedAt": "2026-10-31T11:56:07.025Z",
+      "response": {
+        "status": 404,
+        "body": {
+          "message": "Planta não encontrada."
+        }
+      },
+      "status": "passed",
+      "durationMs": 6.22
+    },
+    {
+      "id": 69,
+      "group": "Exclusão",
+      "name": "Excluir ID inválido retorna 400",
+      "method": "DELETE",
+      "path": "/plantas/abc",
+      "body": null,
+      "expectedStatus": 400,
+      "expected": "ID inválido.",
+      "startedAt": "2026-10-31T11:56:07.031Z",
+      "response": {
+        "status": 400,
+        "body": {
+          "message": "O id deve ser um inteiro maior que zero."
+        }
+      },
+      "status": "passed",
+      "durationMs": 5.73
+    },
+    {
+      "id": 70,
+      "group": "Estoque",
+      "name": "Após limpeza, totais voltam ao valor inicial",
+      "method": "GET",
+      "path": "/plantas/estoque/valor-total",
+      "body": null,
+      "expectedStatus": 200,
+      "expected": "Totais iguais aos registrados antes da suíte.",
+      "startedAt": "2026-10-31T11:56:07.067Z",
+      "response": {
+        "status": 200,
+        "body": {
+          "valorTotalEmCentavos": 0,
+          "totalDeVasos": 0
+        }
+      },
+      "status": "passed",
+      "durationMs": 9.25
+    }
+  ]
+}
