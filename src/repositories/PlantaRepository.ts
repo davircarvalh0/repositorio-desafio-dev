@@ -36,3 +36,29 @@ export const deletePlanta = async (id: number) => {
     where: { id },
   });
 };
+
+export const venderPlanta = async (id: number, quantidade: number) => {
+  return await prisma.$transaction(async (transaction) => {
+    const resultado = await transaction.planta.updateMany({
+      where: {
+        id,
+        estoque: {
+          gte: quantidade,
+        },
+      },
+      data: {
+        estoque: {
+          decrement: quantidade,
+        },
+      },
+    });
+
+    if (resultado.count === 0) {
+      return null;
+    }
+
+    return await transaction.planta.findUnique({
+      where: { id },
+    });
+  });
+};

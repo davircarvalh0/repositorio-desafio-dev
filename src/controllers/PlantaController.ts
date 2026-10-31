@@ -277,3 +277,65 @@ export const deletePlanta = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Erro ao deletar planta." });
   }
 };
+
+export const venderPlanta = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!idValido(id)) {
+      return res.status(400).json({
+        message: "O id deve ser um inteiro maior que zero.",
+      });
+    }
+
+    if (!corpoValido(req.body)) {
+      return res.status(400).json({
+        message: "Envie um objeto JSON com a quantidade da venda.",
+      });
+    }
+
+    const { quantidade } = req.body;
+
+    if (
+      typeof quantidade !== "number" ||
+      !Number.isInteger(quantidade) ||
+      quantidade <= 0
+    ) {
+      return res.status(400).json({
+        message: "quantidade deve ser um inteiro maior que zero.",
+      });
+    }
+
+    const planta = await PlantaRepository.findPlantaById(id);
+
+    if (!planta) {
+      return res.status(404).json({
+        message: "Planta não encontrada.",
+      });
+    }
+
+    if (planta.estoque < quantidade) {
+      return res.status(400).json({
+        message: `Estoque insuficiente. Temos somente ${planta.estoque} vasos disponíveis.`,
+      });
+    }
+
+    const plantaAtualizada = await PlantaRepository.venderPlanta(
+      id,
+      quantidade
+    );
+
+    if (!plantaAtualizada) {
+      return res.status(400).json({
+        message: "Não foi possível concluir a venda: o estoque disponível mudou. Consulte a planta novamente.",
+      });
+    }
+
+    return res.status(200).json(plantaAtualizada);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erro ao realizar venda.",
+    });
+  }
+};
