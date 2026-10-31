@@ -138,7 +138,35 @@ export const createPlanta = async (req: Request, res: Response) => {
 
 export const readAllPlantas = async (req: Request, res: Response) => {
   try {
-    const plantas = await PlantaRepository.findAllPlantas();
+    const { luminosidade, petFriendly } = req.query;
+
+    if (
+      luminosidade !== undefined &&
+      (typeof luminosidade !== "string" ||
+        !Object.values(Luminosidade).includes(
+          luminosidade as Luminosidade
+        ))
+    ) {
+      return res.status(400).json({
+        message: "luminosidade deve ser SOMBRA, MEIA_SOMBRA ou SOL_PLENO.",
+      });
+    }
+
+    if (
+      petFriendly !== undefined &&
+      petFriendly !== "true" &&
+      petFriendly !== "false"
+    ) {
+      return res.status(400).json({
+        message: "petFriendly deve ser true ou false.",
+      });
+    }
+
+    const plantas = await PlantaRepository.findAllPlantas({
+      luminosidade: luminosidade as Luminosidade | undefined,
+      petFriendly:
+        petFriendly === undefined ? undefined : petFriendly === "true",
+    });
 
     return res.status(200).json(plantas);
   } catch (error) {
