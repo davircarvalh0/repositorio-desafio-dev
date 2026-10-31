@@ -1,0 +1,130 @@
+name: API · testes e evidências
+
+on:
+  push:
+    branches: [main, desafio/davirosendo]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evidencias-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Verificar a API em PostgreSQL isolado
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      report: ${{ steps.report.outputs.exists }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ci_test_only
+          POSTGRES_DB: folhagem_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d folhagem_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:ci_test_only@localhost:5432/folhagem_test
+      SERVER_PORT: 3001
+      API_URL: http://localhost:3001
+      E2E_EXPECT_EMPTY: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remover relatório anterior para impedir publicação de dados antigos
+        run: rm -f docs/results.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar as dependências fixadas no lockfile
+        run: |
+          npm install --global yarn@1.22.22
+          yarn install --frozen-lockfile
+      - name: Gerar cliente e aplicar migrations
+        run: |
+          yarn generate
+          yarn migration:deploy
+      - name: Conferir os tipos
+        run: yarn typecheck
+      - name: Iniciar a API
+        run: |
+          yarn dev > "$RUNNER_TEMP/folhagem-server.log" 2>&1 &
+          node --input-type=module -e '
+            let ready = false;
+            for (let i = 0; i < 40; i++) {
+              try {
+                const response = await fetch("http://localhost:3001/", { signal: AbortSignal.timeout(2000) });
+                if (response.ok) { ready = true; break; }
+              } catch {}
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            if (!ready) process.exit(1);
+          '
+      - name: Executar os testes e registrar evidências
+        id: e2e
+        continue-on-error: true
+        run: node scripts/test-api.mjs
+      - name: Verificar se esta execução gerou relatório
+        id: report
+        if: always()
+        run: |
+          if [ -f docs/results.json ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Guardar o site e as respostas reais
+        if: always() && steps.report.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-api
+          path: docs/
+          retention-days: 30
+      - name: Mostrar logs em caso de falha
+        if: failure() || steps.e2e.outcome == 'failure'
+        run: cat "$RUNNER_TEMP/folhagem-server.log" 2>/dev/null || true
+      - name: Marcar falha se algum teste não passou
+        if: steps.e2e.outcome == 'failure'
+        run: exit 1
+
+  publish:
+    name: Publicar as evidências no GitHub Pages
+    needs: test
+    # Falhas da suíte também devem ficar visíveis; PRs nunca publicam.
+    if: >-
+      always() && needs.test.outputs.report == 'true' &&
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/desafio/davirosendo' || github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: evidencias-api
+          path: site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+        id: deployment
